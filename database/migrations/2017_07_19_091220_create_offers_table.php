@@ -15,10 +15,12 @@ class CreateOffersTable extends Migration
     {
         Schema::create('offers', function (Blueprint $table) {
             $table->increments('id');
-            $table->dateTime('date');
-            $table->integer('customer_id')->unsigned();
+            $table->string('wrike_offer_id');
+            $table->string('title')->nullable();
+            $table->integer('customer_id')->unsigned()->nullable();
             $table->string('status');
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10, 2)->nullable();
+            $table->dateTime('date')->nullable();
             $table->timestamps();
         });
     }

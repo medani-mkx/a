@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Offer;
 
 class OffersController extends Controller
@@ -15,11 +14,16 @@ class OffersController extends Controller
     
     public function index()
     {
-        $offers = Offer::all();
+        $inPreparationOffers = Offer::all();
+        $offeredOffers = Offer::all();
+        $acceptedOffers = Offer::all();
+        $rejectedOffers = Offer::all();
         
-        return view('offers', [
-            'pageTitle'     => 'Angebote',
-            'offers'        => $offers,
+        return view('pages.offers', [
+            'inPreparationOffers'   => $inPreparationOffers,
+            'offeredOffers'         => $offeredOffers,
+            'acceptedOffers'        => $acceptedOffers,
+            'rejectedOffers'        => $rejectedOffers,
         ]);
     }
     
@@ -30,12 +34,23 @@ class OffersController extends Controller
     
     public function store(Request $request)
     {
-        //
+        // Validation
+        $this->validate(request(), [
+            'wrike_offer_id'   => 'required',
+        ]);
+        
+        // Build and save
+        $offer = new Offer();
+        $offer->wrike_offer_id = request('wrike_offer_id');
+        $offer->status = 'in_Vorbereitung';
+        $offer->save();
+        
+        // Redirect
+        return redirect('angebote');
     }
     
     public function show($id)
     {
-        //
     }
     
     public function edit($id)

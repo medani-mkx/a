@@ -129,7 +129,7 @@ class AuthorizationController extends Controller
 //                    dd($user);
                     /* Login user */
                     if (Auth::attempt(['email' => $user->email, 'password' => $wrikeUserId])) {
-                        return redirect()->intended('blablabla');
+                        return redirect()->intended('offers');
                     }
                     else {
                         return 'ERROR Login fehlgeschlagen.';
