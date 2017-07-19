@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Illuminate\Support\Facades\Auth;
 use Closure;
 
 class OauthMiddleware
@@ -13,11 +14,18 @@ class OauthMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
-        if($request->session()-) {
-            return $next($request);
+        if (Auth::guard($guard)->check()) {
+            return redirect('/');
         }
+
+        return $next($request);
+        
+//        dd($request->session());
+//        if($request->session()-) {
+//            return $next($request);
+//        }
 
         // Flash message
 //        $request->session()->flash('alert-danger', 'Keine Berechtigung für diese Aktion!');

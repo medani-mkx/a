@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthorizationController extends Controller
 {
@@ -54,8 +55,8 @@ class AuthorizationController extends Controller
             
             $response = json_decode($jsonResponse);
             
-            var_dump($response);
-            echo '<br><br>';
+//            var_dump($response);
+//            echo '<br><br>';
             
             /*
              *  Negative response example:
@@ -96,18 +97,18 @@ class AuthorizationController extends Controller
                 $jsonResponse = curl_exec($ch);
                 curl_close($ch);
                 
-                echo '<pre>';
                 $response =  json_decode($jsonResponse);
-                var_dump($response);
+//                echo '<pre>';
+//                var_dump($response);
 
-                var_dump(env('DB_DATABASE', 'forge'));
+//                var_dump(env('DB_DATABASE', 'forge'));
                 
                 if( isset($response->data[0]->id) && !empty($response->data[0]->id) ) {
                     $wrikeUserId = $response->data[0]->id;
                     
                     
                     if( User::where('wrike_user_id', '=', $wrikeUserId)->exists()) {
-                        echo 'exists';
+                        $user = User::where('wrike_user_id', '=', $wrikeUserId)->first();
                     } else {
                         $user = new User();
                         $user->password         = Hash::make($wrikeUserId);
@@ -116,17 +117,30 @@ class AuthorizationController extends Controller
                         $user->last_name        = isset($response->data[0]->lastName) ? $response->data[0]->lastName : 'kein Nachname';
                         $user->wrike_user_id    = $wrikeUserId;
                         
-                        // save avatar
+                        // TODO: save avatar
                         
                         $user->save();
+                        
+                        if( ! User::where('wrike_user_id', '=', $wrikeUserId)->exists()) {
+                            return 'ERROR user nicht da';
+                        }
+                    }
+                    
+//                    dd($user);
+                    /* Login user */
+                    if (Auth::attempt(['email' => $user->email, 'password' => $wrikeUserId])) {
+                        return redirect()->intended('blablabla');
+                    }
+                    else {
+                        return 'ERROR Login fehlgeschlagen.';
                     }
                 }
                 
             }
+            return '';
+//            echo '<br><br>';
             
-            echo '<br><br>';
-            
-            return $request->input('code');
+//            return $request->input('code');
         }
         
         return Redirect::to($this->url);
