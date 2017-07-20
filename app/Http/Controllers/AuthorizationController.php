@@ -23,10 +23,6 @@ class AuthorizationController extends Controller
     
     public function index(Request $request)
     {
-//        echo '<pre>';
-//        var_dump($request->session());
-        
-        
         // Bsp.: http://127.0.0.1:8000/?error=access_denied&error_description=Request%20denied%20by%20user
         if($request->input('error') == 'access_denied' && $request->input('error_description') == 'Request denied by user') {
             return 'Abbruch: Login über Wrike vom User abgelehnt. <a href="' . $this->url . '">Login</a>';
@@ -35,9 +31,7 @@ class AuthorizationController extends Controller
         // Bsp.: http://127.0.0.1:8000/?code=mnzgdIhdePFDqCkDBSwh8nztcmWY8Qet0h130Az36km4MwMOQyRWb985jRHvrbIT-N
         else if(null !== $request->input('code')) {
             
-            $postData = 'client_id=' . $this->clientId . '&client_secret=' . $this->clientSecret . '&grant_type=authorization_code&code='.$request->input('code');
-//            echo $postData.'<br><br>';
-            
+            $postData = 'client_id=' . $this->clientId . '&client_secret=' . $this->clientSecret . '&grant_type=authorization_code&code='.$request->input('code');            
             $curloptUrl = 'https://www.wrike.com/oauth2/token';
 
             // Bsp.: curl -X POST -d "client_id=y5IDCaV6&client_secret=yEB6pghtquRJE03nwZgCMCrFNMfbzHAeQXoYyV9EZK7xFjQSEJAwN142PC71KDHY&grant_type=authorization_code&code=3NyMA8KusMENDL3riePObiuLqpxSP9ChWih3UAi4TUuSMwm8a1A36xk7IZwKNxfZ-N" https://www.wrike.com/oauth2/token
@@ -54,9 +48,6 @@ class AuthorizationController extends Controller
             
             
             $response = json_decode($jsonResponse);
-            
-//            var_dump($response);
-//            echo '<br><br>';
             
             /*
              *  Negative response example:
@@ -81,6 +72,11 @@ class AuthorizationController extends Controller
              *  }
              */
             else {
+                        
+                session([
+                    'mwd-wrike' => $response,
+                ]);
+                        
                 $curloptUrlRouteAndParams = 'contacts?me=true';
                 $curloptHttpHeaders = ['Authorization: ' . $response->token_type . ' ' . $response->access_token];
                 $curloptUrl = 'https://' . $response->host . '/api/v3/' . $curloptUrlRouteAndParams;
@@ -98,10 +94,6 @@ class AuthorizationController extends Controller
                 curl_close($ch);
                 
                 $response =  json_decode($jsonResponse);
-//                echo '<pre>';
-//                var_dump($response);
-
-//                var_dump(env('DB_DATABASE', 'forge'));
                 
                 if( isset($response->data[0]->id) && !empty($response->data[0]->id) ) {
                     $wrikeUserId = $response->data[0]->id;
@@ -111,22 +103,17 @@ class AuthorizationController extends Controller
                         $user = User::where('wrike_user_id', '=', $wrikeUserId)->first();
                     } else {
                         $user = new User();
-                        $user->password         = Hash::make($wrikeUserId);
-                        $user->email            = isset($response->data[0]->profiles[0]->email) ? $response->data[0]->profiles[0]->email : 'keine Email';
-                        $user->first_name       = isset($response->data[0]->firstName) ? $response->data[0]->firstName : 'kein Vorname';
-                        $user->last_name        = isset($response->data[0]->lastName) ? $response->data[0]->lastName : 'kein Nachname';
-                        $user->wrike_user_id    = $wrikeUserId;
-                        
-                        // TODO: save avatar
-                        
-                        $user->save();
-                        
-                        if( ! User::where('wrike_user_id', '=', $wrikeUserId)->exists()) {
-                            return 'ERROR user nicht da';
-                        }
                     }
                     
-//                    dd($user);
+                    $user->password         = Hash::make($wrikeUserId);
+                    $user->email            = isset($response->data[0]->profiles[0]->email) ? $response->data[0]->profiles[0]->email : 'keine Email';
+                    $user->first_name       = isset($response->data[0]->firstName) ? $response->data[0]->firstName : 'kein Vorname';
+                    $user->last_name        = isset($response->data[0]->lastName) ? $response->data[0]->lastName : 'kein Nachname';
+                    $user->avatarUrl        = isset($response->data[0]->avatarUrl) ? $response->data[0]->avatarUrl : 'kein Avatar';
+                    $user->wrike_user_id    = $wrikeUserId;
+
+                    $user->save();
+                    
                     /* Login user */
                     if (Auth::attempt(['email' => $user->email, 'password' => $wrikeUserId])) {
                         return redirect()->intended('offers');
@@ -137,10 +124,7 @@ class AuthorizationController extends Controller
                 }
                 
             }
-            return '';
-//            echo '<br><br>';
-            
-//            return $request->input('code');
+            return 'ERROR ?';
         }
         
         return Redirect::to($this->url);

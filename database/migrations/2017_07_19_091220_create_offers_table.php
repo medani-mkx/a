@@ -20,7 +20,8 @@ class CreateOffersTable extends Migration
             $table->timestamps();
             
             $table->text('requirement')->nullable();
-            $table->string('wrike_offer_id')->nullable();
+            $table->string('wrike_project_id_v2')->nullable();
+            $table->string('wrike_project_id_v3')->nullable();
             $table->integer('customer_id')->unsigned()->nullable();
             $table->decimal('price', 10, 2)->nullable();
             $table->decimal('rph', 10, 2)->nullable();

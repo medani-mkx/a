@@ -15,6 +15,22 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('wrike_task_id_v3')->nullable();
+            $table->string('wrike_title')->nullable();
+            $table->string('title');
+            $table->string('wrike_description')->nullable();
+            $table->string('description')->nullable();
+            $table->string('wrike_effort', 10, 2)->nullable();
+            $table->decimal('effort', 10, 2)->nullable();
+            $table->decimal('wrike_effort_design', 10, 2)->nullable();
+            $table->decimal('effort_design', 10, 2)->nullable();
+            $table->decimal('wrike_effort_tech', 10, 2)->nullable();
+            $table->decimal('effort_tech', 10, 2)->nullable();
+            $table->boolean('wrike_optional')->nullable();
+            $table->boolean('optional')->nullable();
+            $table->boolean('visible')->nullable();
+            $table->boolean('included_in_the_price')->nullable();
+            $table->string('special_rph')->nullable();
             $table->timestamps();
         });
     }

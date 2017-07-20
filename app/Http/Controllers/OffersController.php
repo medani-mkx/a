@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Facades\WrikeApiFacade as Wrike;
 use App\Offer;
+use App\Task;
 
 class OffersController extends Controller
 {
@@ -27,10 +29,7 @@ class OffersController extends Controller
         ]);
     }
     
-    public function create()
-    {
-        //
-    }
+    public function create()    {}
     
     public function store(Request $request)
     {
@@ -40,18 +39,23 @@ class OffersController extends Controller
             'status'    => 'required',
         ]);
         
+        if(request('id')) {
+            $offer = Offer::find(request('id'));
+        }
+        else {
+            $offer = new Offer();
+        }
         
-        
-        // Build and save
-        $offer = new Offer();
         $offer->title = request('title');
-        $offer->wrike_offer_id = request('wrike_offer_id');
+        $offer->wrike_project_id_v2 = request('wrike_project_id_v2');
+        $offer->wrike_project_id_v3 = Wrike::convertLegacyId($offer->wrike_project_id_v2, 'Folder');
         $offer->date = request('alternativeDate');
         $offer->status = request('status');
         $offer->price = request('price');
         $offer->rph = request('rph');
         $offer->customer_id = request('customer_id');
         $offer->requirement = request('requirement');
+        
         $offer->save();
         
         // Redirect
@@ -63,21 +67,33 @@ class OffersController extends Controller
         if($id === 'new') {
             return view('pages.offer');
         }
-        dd('not new ');
+        
+        $offer = Offer::find($id);
+        
+        return view('pages.offer', [
+            'offer' => $offer,
+        ]);
     }
     
-    public function edit($id)
+    public function edit($id)    {}
+    
+    public function update(Request $request, $id)    {}
+    
+    public function destroy($id)    {}
+    
+    public function importTasks(Request $request, $id)
     {
-        //
+        $offer = Offer::find($id)->first();
+        
+        $wrikeProjectId = $offer->wrike_project_id_v3;
+        
+        $tasks = Wrike::getProjectTasks($wrikeProjectId);
+        
+        foreach($tasks as $task) {
+            
+        }
+        
+        return 'HHHHHHHHHHHHHHHHHIER';
     }
     
-    public function update(Request $request, $id)
-    {
-        //
-    }
-    
-    public function destroy($id)
-    {
-        //
-    }
 }

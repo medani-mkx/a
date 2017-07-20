@@ -38,6 +38,11 @@
         <div id="mwd-right-menu" class="collapse navbar-collapse navbar-right">
             <ul class="nav navbar-nav">
                 @if (Auth::check())
+                    <li><a>
+                        <img src="{{ Auth::user()->avatarUrl }}" />
+                        {{ Auth::user()->first_name }}
+                        {{ Auth::user()->last_name }}
+                    </a></li>
                     <li>
                         <a href="{{ route('logout') }}"
                             onclick="event.preventDefault();
@@ -53,10 +58,5 @@
             </ul>
         </div>
         
-        
     </div>
 </nav>
-                @if (Route::has('login'))
-                    <ul class="nav navbar-nav">
-                    </ul>
-                @endif

@@ -5,10 +5,13 @@ Route::get(     'login',        'AuthorizationController@index')    ->name('logi
 Route::post(    'logout',       'Auth\LoginController@logout')      ->name('logout');
 
 Route::group(['middleware' => ['web','auth']], function () {
-    Route::get(     'offers',        'OffersController@index')       ->name('offers');
-    Route::get(     'offers/{id}',   'OffersController@show');
-    Route::post(    'offers',        'OffersController@store');
-    Route::get(     'texts',         'OfferTextsController@index')   ->name('texts');
-    Route::get(     'customers',     'CustomersController@index')    ->name('customers');
-    Route::get(     'settings',      'SettingsController@index')     ->name('settings');
+    Route::get('testinger', 'OffersController@tester');
+    
+    Route::get(     'offers',                   'OffersController@index')           ->name('offers');
+    Route::get(     'offers/{id}',              'OffersController@show');
+    Route::get(     'offers/{id}/importTasks',  'OffersController@importTasks');
+    Route::post(    'offers',                   'OffersController@store');
+    Route::get(     'texts',                    'OfferTextsController@index')       ->name('texts');
+    Route::get(     'customers',                'CustomersController@index')        ->name('customers');
+    Route::get(     'settings',                 'SettingsController@index')         ->name('settings');
 });

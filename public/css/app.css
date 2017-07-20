@@ -53,12 +53,19 @@ h3 {
 .navbar-left .navbar-nav {
     min-height: 65px ! important;
 }
+.navbar-right img {
+    height: 24px ! important;
+    padding-right: 3px;
+}
 
 /*** Page: offers ***/
 #mwd-new-offer {
     float: right ! important;
 }
-
+/*** Page: offer ***/
+#mwd-save-offer-button {
+    float: right ! important;
+}
 
 
 
