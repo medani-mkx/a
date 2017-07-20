@@ -14,10 +14,10 @@ class OffersController extends Controller
     
     public function index()
     {
-        $inPreparationOffers = Offer::all();
-        $offeredOffers = Offer::all();
-        $acceptedOffers = Offer::all();
-        $rejectedOffers = Offer::all();
+        $inPreparationOffers = Offer::where('status', 'in_Vorbereitung')->get();
+        $offeredOffers = Offer::where('status', 'angeboten')->get();
+        $acceptedOffers = Offer::where('status', 'angenommen')->get();
+        $rejectedOffers = Offer::where('status', 'abgelehnt')->get();
         
         return view('pages.offers', [
             'inPreparationOffers'   => $inPreparationOffers,
@@ -36,21 +36,34 @@ class OffersController extends Controller
     {
         // Validation
         $this->validate(request(), [
-            'wrike_offer_id'   => 'required',
+            'title'     => 'required',
+            'status'    => 'required',
         ]);
+        
+        
         
         // Build and save
         $offer = new Offer();
+        $offer->title = request('title');
         $offer->wrike_offer_id = request('wrike_offer_id');
-        $offer->status = 'in_Vorbereitung';
+        $offer->date = request('alternativeDate');
+        $offer->status = request('status');
+        $offer->price = request('price');
+        $offer->rph = request('rph');
+        $offer->customer_id = request('customer_id');
+        $offer->requirement = request('requirement');
         $offer->save();
         
         // Redirect
-        return redirect('angebote');
+        return redirect('offers');
     }
     
     public function show($id)
     {
+        if($id === 'new') {
+            return view('pages.offer');
+        }
+        dd('not new ');
     }
     
     public function edit($id)

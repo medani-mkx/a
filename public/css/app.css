@@ -6,47 +6,66 @@
  
 /*** Body ***/
 body {
-    padding-top: 78px;
-    background-color: rgb(247, 247, 247);
+    padding-top: 78px ! important;
+    background-color: rgb(247, 247, 247) ! important;
+}
+h3 {
+    padding-bottom: 20px ! important;
 }
 
 /*** Navigation ***/
 .navbar {
-    min-height: 65px;
+    min-height: 65px ! important;
 }
 .navbar {
-    border: none;
+    border: none ! important;
 }
 .navbar h3 {
-    padding-top: 7px;
+    padding-top: 7px ! important;
 }
 .navbar li {
-    min-height: 65px;
+    min-height: 65px ! important;
 }
 .navbar li a {
-    padding: 21px 15px;
+    padding: 21px 15px ! important;
 }
 .navbar button {
-    margin: 16px 25px 16px 0;
+    margin: 16px 25px 16px 0 ! important;
 }
 /* header */
 .navbar-header {
-    min-height: 65px;
+    min-height: 65px ! important;
 }
 .navbar-header img {
-    height: 40px;
+    height: 40px ! important;
 }
 /* left */
 .navbar-left {
-    min-height: 65px;
+    min-height: 65px ! important;
 }
 .navbar-left .nav-tabs {
-    min-height: 65px;
+    min-height: 65px ! important;
 }
 /* right */
 .navbar-right {
-    min-height: 65px;
+    min-height: 65px ! important;
 }
 .navbar-left .navbar-nav {
-    min-height: 65px;
+    min-height: 65px ! important;
 }
+
+/*** Page: offers ***/
+#mwd-new-offer {
+    float: right ! important;
+}
+
+
+
+
+
+
+/*    required:after{ 
+        content:'*'; 
+        color:red; 
+        padding-left:5px;
+    }*/

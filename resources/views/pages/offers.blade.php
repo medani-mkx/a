@@ -1,35 +1,30 @@
 @extends('layouts.main')
 
 @section('content')
-
-    <!-- Keine-Berechtigung-Meldung 
-    <div class="flash-message">
-        @foreach (['danger', 'warning', 'success', 'info'] as $msg)
-            @if(Session::has('alert-' . $msg))
-            <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
-            @endif
-        @endforeach
-    </div>-->
     
     <div class="row">
         <h3>
             <span>Angebote&nbsp;&nbsp;&nbsp;</span>
-            @include('layouts.createButton', ['type'  => 'offer'])
+            <a id="mwd-new-offer" href="{{ url('offers/new') }}" class="btn btn-success" role="button">
+                <span class="glyphicon glyphicon-plus"></span><span class="align-middle">&nbsp;&nbsp;&nbsp;Neu</span>
+            </a>
         </h3>
     </div>
     
     <div class="row">
         
         <!-- Angebote nach Status wählen -->
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <ul class="nav nav-pills nav-stacked mwd-offer-statuses">
-                <li role="presentation" class="active"><a href="#">In Vorbereitung</a></li>
-                <li role="presentation"><a href="#">Angeboten</a></li>
-                <li role="presentation"><a href="#">Angenommen</a></li>
-                <li role="presentation"><a href="#">Abgelehnt</a></li>
+                <li role="presentation" data-status="inPreparationOffers" class="active"><a href="#">In Vorbereitung</a></li>
+                <li role="presentation" data-status="offeredOffers"><a href="#">Angeboten</a></li>
+                <li role="presentation" data-status="acceptedOffers"><a href="#">Angenommen</a></li>
+                <li role="presentation" data-status="rejectedOffers"><a href="#">Abgelehnt</a></li>
             </ul>
         </div>
         
+        <!-- Space -->
+        <div class="col-sm-1"></div>
         
         <!-- Liste der Angebote -->
         <div class="col-sm-9">
@@ -52,36 +47,38 @@
             
             <hr>
             
-            <!-- Angebote in Vorbereitung -->
-            <div id="inPreparationOffers">
-                @foreach ($inPreparationOffers as $offer)
-                    @include('model.offer')
-                    <hr>
-                @endforeach
-            </div>
-            
-            <!-- Angebotene Angebote -->
-            <div id="offeredOffers" class="hidden">
-                @foreach ($offeredOffers as $offer)
-                    @include('model.offer')
-                    <hr>
-                @endforeach
-            </div>
-            
-            <!-- Angenommene Angebote -->
-            <div id="acceptedOffers" class="hidden">
-                @foreach ($acceptedOffers as $offer)
-                    @include('model.offer')
-                    <hr>
-                @endforeach
-            </div>
-            
-            <!-- Abgelehnte Angebote -->
-            <div id="rejectedOffers" class="hidden">
-                @foreach ($rejectedOffers as $offer)
-                    @include('model.offer')
-                    <hr>
-                @endforeach
+            <div class="mwd-offer-data">
+                <!-- Angebote in Vorbereitung -->
+                <div id="inPreparationOffers">
+                    @foreach ($inPreparationOffers as $offer)
+                        @include('model.offer')
+                        <hr>
+                    @endforeach
+                </div>
+
+                <!-- Angebotene Angebote -->
+                <div id="offeredOffers" class="hidden">
+                    @foreach ($offeredOffers as $offer)
+                        @include('model.offer')
+                        <hr>
+                    @endforeach
+                </div>
+
+                <!-- Angenommene Angebote -->
+                <div id="acceptedOffers" class="hidden">
+                    @foreach ($acceptedOffers as $offer)
+                        @include('model.offer')
+                        <hr>
+                    @endforeach
+                </div>
+
+                <!-- Abgelehnte Angebote -->
+                <div id="rejectedOffers" class="hidden">
+                    @foreach ($rejectedOffers as $offer)
+                        @include('model.offer')
+                        <hr>
+                    @endforeach
+                </div>
             </div>
             
         </div>

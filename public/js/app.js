@@ -60,21 +60,34 @@ $(document).ready(function(){
     });
     
     /* Toggle offers depending on offer status selection */
-    $('.mwd-offer-statuses').click(function(e) {
+    $('.mwd-offer-statuses li').click(function(e) {
         e.preventDefault();
         
         var statuses = $('.mwd-offer-statuses').children();
         
         [].forEach.call(statuses, function(el) {
-            el.classList.remove("active");
+            el.classList.remove('active');
         });
         
-        $(this).parent().addClass('active');
-//        if ($($excerpt).is(":visible")) {
-//                $excerpt.slideToggle();
-//        } else {
-//                $('.bewerbung_toggle').hide(700);
-//                $excerpt.slideToggle();
-//        }
+        $(this).addClass('active');
+        
+        var datas = $('.mwd-offer-data').children();
+        
+        [].forEach.call(datas, function(el) {
+                el.classList.add('hidden')
+        });
+        
+        var selectedStatus = $(this).data('status');
+        
+        $('#' + selectedStatus).removeClass('hidden');
     });
 });
+
+
+        var $excerpt = jQuery(this).parent().children(".bewerbung_toggle");
+        if (jQuery($excerpt).is(":visible")) {
+                $excerpt.slideToggle();
+        } else {
+                jQuery('.bewerbung_toggle').hide(700);
+                $excerpt.slideToggle();
+        }

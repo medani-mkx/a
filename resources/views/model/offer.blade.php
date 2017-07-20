@@ -15,4 +15,7 @@
         <span class="hidden-md hidden-lg"><strong>Preis: </strong></span>
         {{ $offer->price }}
     </div>
+    <a id="mwd-new-offer" href="{{ url('offers/' . $offer->id) }}" class="btn btn-primary" role="button">
+        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+    </a>
 </div>

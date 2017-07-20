@@ -6,6 +6,7 @@ Route::post(    'logout',       'Auth\LoginController@logout')      ->name('logo
 
 Route::group(['middleware' => ['web','auth']], function () {
     Route::get(     'offers',        'OffersController@index')       ->name('offers');
+    Route::get(     'offers/{id}',   'OffersController@show');
     Route::post(    'offers',        'OffersController@store');
     Route::get(     'texts',         'OfferTextsController@index')   ->name('texts');
     Route::get(     'customers',     'CustomersController@index')    ->name('customers');
