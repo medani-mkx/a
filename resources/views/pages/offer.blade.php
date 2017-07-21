@@ -98,7 +98,7 @@
                     <input type="text" class="form-control" id="wrike_project_id_v2" name="wrike_project_id_v2" value="{{ isset($offer->wrike_project_id_v2) ? $offer->wrike_project_id_v2 : old('wrike_project_id_v2') }}">
                 </div>
                 @isset($offer->id)
-                <a id="mwd-new-offer col-sm-2" href="{{ url('offers/' . $offer->id . '/importTasks') }}" class="btn btn-success" role="button">
+                <a id="mwd-new-offer col-sm-2" href="{{ url('tasks/import/offer/' . $offer->id) }}" class="btn btn-success" role="button">
                     <span class="align-middle">Import</span>
                 </a>
                 @endisset
@@ -107,5 +107,15 @@
         </div>
         
     </form>
+
+    @isset($tasks)
+        <ul>
+        @foreach ($tasks as $task)
+            @include('model.task')
+        @endforeach
+        </ul>
+    @else
+        none
+    @endisset
     
 @endsection

@@ -70,8 +70,11 @@ class OffersController extends Controller
         
         $offer = Offer::find($id);
         
+        $tasks = Task::getTaskTreeForOffer($id);
+        
         return view('pages.offer', [
-            'offer' => $offer,
+            'offer'     => $offer,
+            'tasks'     => $tasks,
         ]);
     }
     
@@ -80,20 +83,4 @@ class OffersController extends Controller
     public function update(Request $request, $id)    {}
     
     public function destroy($id)    {}
-    
-    public function importTasks(Request $request, $id)
-    {
-        $offer = Offer::find($id)->first();
-        
-        $wrikeProjectId = $offer->wrike_project_id_v3;
-        
-        $tasks = Wrike::getProjectTasks($wrikeProjectId);
-        
-        foreach($tasks as $task) {
-            
-        }
-        
-        return 'HHHHHHHHHHHHHHHHHIER';
-    }
-    
 }

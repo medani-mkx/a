@@ -15,17 +15,20 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('wrike_task_id_v3')->nullable();
+            $table->integer('offer_id');
+            $table->boolean('wrike_has_parent_tasks');
+            $table->boolean('wrike_has_child_tasks');
+            $table->string('wrike_task_id_v3')->unique()->nullable();
             $table->string('wrike_title')->nullable();
             $table->string('title');
-            $table->string('wrike_description')->nullable();
-            $table->string('description')->nullable();
-            $table->string('wrike_effort', 10, 2)->nullable();
-            $table->decimal('effort', 10, 2)->nullable();
-            $table->decimal('wrike_effort_design', 10, 2)->nullable();
-            $table->decimal('effort_design', 10, 2)->nullable();
-            $table->decimal('wrike_effort_tech', 10, 2)->nullable();
-            $table->decimal('effort_tech', 10, 2)->nullable();
+            $table->text('wrike_description')->nullable();
+            $table->text('description')->nullable();
+            $table->time('wrike_effort')->nullable();
+            $table->time('effort')->nullable();
+            $table->time('wrike_effort_design')->nullable();
+            $table->time('effort_design')->nullable();
+            $table->time('wrike_effort_tech')->nullable();
+            $table->time('effort_tech')->nullable();
             $table->boolean('wrike_optional')->nullable();
             $table->boolean('optional')->nullable();
             $table->boolean('visible')->nullable();
