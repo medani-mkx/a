@@ -5,8 +5,8 @@ namespace App\Facades;
 use Illuminate\Support\Facades\Facade;
 
 class WrikeApiFacade extends Facade {
-    private const PROTOCOL = 'https://';
-    private const API_PATH = '/api/v3/';
+    const PROTOCOL = 'https://';
+    const API_PATH = '/api/v3/';
     private static $accessToken = null;
     private static $tokenType = null;
     private static $host = null;
@@ -53,6 +53,7 @@ class WrikeApiFacade extends Facade {
         $params = '?fields=%5B' . $fields . '%5D&subTasks=true';
         $urlWithParams = 'folders/' . $wrikeProjectId . '/tasks' . $params;
         $response = self::curlGet($urlWithParams);
+        
         return $response->data;
     }
     

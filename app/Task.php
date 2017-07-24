@@ -8,43 +8,36 @@ use Illuminate\Support\Facades\DB;
 
 class Task extends Model
 {
-    public static function getTaskTreeForOffer($offerId)
+    public $children = [];
+
+    public static function getOfferSubtaskTree($offerId)
     {
-        $firstLevelTasks = Task::where('offer_id', '=', $offerId)
-                ->where('wrike_has_parent_tasks', '=', 0)
-                ->get();
-        
         $tree = [];
         
-        $i = 0;
+        $firstLevelTasks = Task::where('offer_id', '=', $offerId)
+                ->where('wrike_has_parent_tasks', '=', 0)
+                ->orderBy('title')
+                ->get();
+        
         foreach($firstLevelTasks as $firstLevelTask) {
-            $tree[$i]['task'] = $firstLevelTask;
-            if($firstLevelTask->wrike_has_child_tasks) {
-                $tree[$i]['children'] = self::getTaskTree($firstLevelTask);
-            }
-            $i++;
+            $tree[] = $firstLevelTask;
+            $firstLevelTask->children = self::getTaskSubtaskTree($firstLevelTask);
         }
+       
+        usort($tree, function ($a, $b) {
+            return strnatcmp($a->title, $b->title);
+        });
         
         return $tree;
     }
     
-    private static function getTaskTree($task)
+    private static function getTaskSubtaskTree(Task $task)
     {
-        static $tree = [];
         $children = self::children($task->wrike_task_id_v3);
-        
-        $i = 0;
-        foreach($children as $firstLevelTask) {
-            $tree[$i]['task'] = $firstLevelTask;
-            if($firstLevelTask->wrike_has_child_tasks) {
-                $tree[$i]['children'] = self::getTaskTree($firstLevelTask);
-            } else {
-                unset($tree[$i]['children']);
-            }
-            $i++;
+        foreach($children as $child) {
+            $child->children = self::getTaskSubtaskTree($child);
         }
-        
-        return $tree;
+        return $children;
     }
     
     private static function children($wrikeTaskv3Id)
@@ -52,7 +45,49 @@ class Task extends Model
         $children = Task::join(
             DB::raw(' (SELECT tt.* FROM tasks INNER JOIN task_task AS tt ON tt.parent_wrike_task_id_v3 = tasks.wrike_task_id_v3 WHERE tasks.wrike_task_id_v3 = "' . $wrikeTaskv3Id . '") AS tt '),
             'tasks.wrike_task_id_v3', '=', 'tt.child_wrike_task_id_v3'
-        )->get();
+        )->orderBy('title')->get();
+        $t=$children;
+        
         return $children;
+    }
+    
+    public function getEffort()
+    {
+        if($this->effort_design && $this->effort_tech) {
+            $timestamp = strtotime($this->effort_design) + strtotime($this->effort_tech);
+            $effort = date('H:i:s', $timestamp);
+            return preg_replace('%:[0-9][0-9]$%', '', $effort);
+        }
+        if($this->effort_design) {
+            return preg_replace('%:[0-9][0-9]$%', '', $this->effort_design);
+        }
+        if($this->effort_tech) {
+            return preg_replace('%:[0-9][0-9]$%', '', $this->effort_tech);
+        }
+        return '00:00';
+    }
+    
+    public function getEffortDesign()
+    {
+        return $this->effort_design ? preg_replace('%:[0-9][0-9]$%', '', $this->effort_design) : '00:00';
+    }
+    
+    public function getEffortTech()
+    {
+        return $this->effort_tech ? preg_replace('%:[0-9][0-9]$%', '', $this->effort_tech) : '00:00';
+    }
+    
+    public function getPrice()
+    {
+        $array = explode(':', $this->getEffort());
+        $hours = $array[0] + $array[1] / 60;
+        $price = $hours * $this->getRph();
+        return number_format($price, 2);
+    }
+    
+    private function getRph()
+    {
+        $offer = Offer::find($this->offer_id);
+        return $offer->rph;
     }
 }

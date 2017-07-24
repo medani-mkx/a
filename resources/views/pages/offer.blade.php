@@ -108,14 +108,14 @@
         
     </form>
 
-    @isset($tasks)
-        <ul>
-        @foreach ($tasks as $task)
-            @include('model.task')
-        @endforeach
-        </ul>
-    @else
-        none
-    @endisset
+    <div id="mwd-task-list" class="row">
+        @isset($tasks)
+            @foreach ($tasks as $task)
+                @include('model.task', ['space' => ''])
+            @endforeach
+        @else
+            Keine Tasks vorhanden.
+        @endisset
+    </div>
     
 @endsection

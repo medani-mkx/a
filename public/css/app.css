@@ -66,11 +66,27 @@ h3 {
 #mwd-save-offer-button {
     float: right ! important;
 }
+#mwd-task-list .row {
+    margin-right: 0;
+    margin-left: 0;
+}
 
+.mwd-task.mwd-task-level-0:nth-child(even) {
+    background: #C8C8C8	;
+}
 
-
-
-
+.mwd-task.mwd-task-level-1 {
+    background: #E8E8E8	;
+}
+.mwd-task.mwd-task-level-2 {
+    background: #E8E8E8		;
+}
+.mwd-task.mwd-task-level-3 {
+    background: #E8E8E8		;
+}
+.mwd-task.mwd-task-level-4 {
+    background: #E8E8E8	;
+}
 /*    required:after{ 
         content:'*'; 
         color:red; 

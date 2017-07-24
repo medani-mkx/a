@@ -11,25 +11,28 @@ use App\TaskTask;
 class TasksController extends Controller
 {
     /* Wrike Custom Field IDs */
-    private const AUFWAND_GESAMT = 'IEABIK4UJUAAFUWB';
-    private const AUFWAND_DESIGN_UND_UX = 'IEABIK4UJUAAFKGZ';
-    private const AUFWAND_TECHNIK = 'IEABIK4UJUAAFKGS';
+    const AUFWAND_GESAMT = 'IEABIK4UJUAAFUWB';
+    const AUFWAND_DESIGN_UND_UX = 'IEABIK4UJUAAFKGZ';
+    const AUFWAND_TECHNIK = 'IEABIK4UJUAAFKGS';
     
     private function getCustomFieldFromWrikeTask($wrikeTask, $searchedFieldId)
     {
         foreach($wrikeTask->customFields as $customField) {
             if($customField->id == $searchedFieldId) {
                 if($customField->value == '0h' || $customField->value == '') {
-                    return 0;
+                    return 1;
                 }
-                if(preg_match('%^[0-9:]$%', $customField->value)) {
+                if(preg_match('%^[0-9:]+$%', $customField->value)) {
                     return $customField->value;
+                }
+                else {
+                    return 2;
                 }
             }
         }
         return null;
     }
-    private function taskExists($wrikeTask)
+    private function taskExistsInDb($wrikeTask)
     {
         static $id = null;
         static $task = null;
@@ -47,10 +50,15 @@ class TasksController extends Controller
             }
         }
     }
+    private function taskToTaskRelationExistsInDb($parentId, $childId) {
+        $taskToTaskRelation = TaskTask::where('parent_wrike_task_id_v3', $parentId)->where('child_wrike_task_id_v3', $childId)->first();
+        return $taskToTaskRelation;
+    }
+
     private function createTaskFromWrikeTask($offerId, $wrikeTask)
     {
-        if($this->taskExists($wrikeTask)) {
-            $task = $this->taskExists($wrikeTask); 
+        if($this->taskExistsInDb($wrikeTask)) {
+            $task = $this->taskExistsInDb($wrikeTask); 
         }
         else {
             $task = new Task();
@@ -61,10 +69,12 @@ class TasksController extends Controller
         $task->wrike_has_child_tasks = !empty($wrikeTask->subTaskIds);
         if($task->wrike_has_child_tasks) {
             foreach($wrikeTask->subTaskIds as $childTaskV3Id) {
-                $taskTask = new TaskTask();
-                $taskTask->parent_wrike_task_id_v3 = $wrikeTask->id;
-                $taskTask->child_wrike_task_id_v3 = $childTaskV3Id;
-                $taskTask->save();
+                if( !$this->taskToTaskRelationExistsInDb($wrikeTask->id, $childTaskV3Id) ) {
+                    $taskTask = new TaskTask();
+                    $taskTask->parent_wrike_task_id_v3 = $wrikeTask->id;
+                    $taskTask->child_wrike_task_id_v3 = $childTaskV3Id;
+                    $taskTask->save();
+                }
             }
         }
         $task->wrike_title = $wrikeTask->title;
@@ -73,7 +83,7 @@ class TasksController extends Controller
         $task->wrike_effort_design = $this->getCustomFieldFromWrikeTask($wrikeTask, self::AUFWAND_DESIGN_UND_UX);
         $task->wrike_effort_tech = $this->getCustomFieldFromWrikeTask($wrikeTask, self::AUFWAND_TECHNIK);
         $task->wrike_optional = preg_match('%\[optional\]%', $wrikeTask->title);
-        if( ! $this->taskExists($wrikeTask)) {
+        if( ! $this->taskExistsInDb($wrikeTask)) {
             $task->title = $task->wrike_title;
             $task->description = $task->wrike_description;
             $task->effort = $task->wrike_effort;
@@ -88,17 +98,18 @@ class TasksController extends Controller
     
     public function import(Request $request, $id)
     {
-        $offer = Offer::find($id)->first();
+        $offerId = $id;
+        
+        $offer = Offer::find($offerId)->first();
         
         $wrikeProjectId = $offer->wrike_project_id_v3;
         
         $wrikeTasks = Wrike::getProjectTasks($wrikeProjectId);
         
         foreach($wrikeTasks as $wrikeTask) {
-            $this->createTaskFromWrikeTask($id, $wrikeTask);
+            $this->createTaskFromWrikeTask($offerId, $wrikeTask);
         }
-        
-        return redirect('offers/' . $id);
+        return redirect('offers/' . $offerId);
     }
 
     /**

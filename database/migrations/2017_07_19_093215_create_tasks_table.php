@@ -21,6 +21,7 @@ class CreateTasksTable extends Migration
             $table->string('wrike_task_id_v3')->unique()->nullable();
             $table->string('wrike_title')->nullable();
             $table->string('title');
+            $table->decimal('price', 10, 2)->nullable();
             $table->text('wrike_description')->nullable();
             $table->text('description')->nullable();
             $table->time('wrike_effort')->nullable();

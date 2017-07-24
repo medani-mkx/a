@@ -48,7 +48,9 @@ class OffersController extends Controller
         
         $offer->title = request('title');
         $offer->wrike_project_id_v2 = request('wrike_project_id_v2');
-        $offer->wrike_project_id_v3 = Wrike::convertLegacyId($offer->wrike_project_id_v2, 'Folder');
+        if($offer->wrike_project_id_v2) {
+            $offer->wrike_project_id_v3 = Wrike::convertLegacyId($offer->wrike_project_id_v2, 'Folder');
+        }
         $offer->date = request('alternativeDate');
         $offer->status = request('status');
         $offer->price = request('price');
@@ -70,7 +72,10 @@ class OffersController extends Controller
         
         $offer = Offer::find($id);
         
-        $tasks = Task::getTaskTreeForOffer($id);
+        $tasks = Task::getOfferSubtaskTree($id);
+        
+//        echo '<pre>';
+//        var_dump($tasks);
         
         return view('pages.offer', [
             'offer'     => $offer,
