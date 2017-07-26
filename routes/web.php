@@ -1,12 +1,10 @@
 <?php
 
-Route::get(     '/',            'AuthorizationController@index')    ->name('/');
-Route::get(     'login',        'AuthorizationController@index')    ->name('login');
-Route::post(    'logout',       'Auth\LoginController@logout')      ->name('logout');
+Route::get(     '/',            'AuthorizationController@index')        ->name('/');
+Route::get(     'login',        'AuthorizationController@index')        ->name('login');
+Route::post(    'logout',       'AuthorizationController@logout')       ->name('logout');
 
 Route::group(['middleware' => ['web','auth']], function () {
-    Route::get('testinger', 'OffersController@tester');
-    
     Route::get(     'offers',                   'OffersController@index')           ->name('offers');
     Route::get(     'offers/{id}',              'OffersController@show');
     Route::get(     'tasks/import/offer/{id}',  'TasksController@import');

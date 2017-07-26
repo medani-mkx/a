@@ -80,7 +80,7 @@
 
                 <!-- Submit-Button -->
                 <div id="mwd-save-offer-button" class="form-group">
-                    <div class="col-sm-offset-1 col-sm-10">
+                    <div class="col-sm-12">
                         <button type="submit" class="btn btn-primary">Speichern</button>
                     </div>
                 </div>
@@ -102,6 +102,13 @@
                     <span class="align-middle">Import</span>
                 </a>
                 @endisset
+            </div>
+
+            <!-- PDF-Button -->
+            <div id="mwd-offer-pdf-button" class="form-group">
+                <a href="{{ url('offer/' . $offer->id . '/pdf') }}" class="btn btn-primary" role="button">
+                    <span class="align-middle">PDF</span>
+                </a>
             </div>
             
         </div>

@@ -1,8 +1,8 @@
 <div class="row mwd-task mwd-task-level-{{ substr_count($space, '&nbsp;') / 5 }}">
-    <div class="col-sm-7">
+    <div class="col-sm-6">
         {{ $space }}{{ $task->title }}
     </div>
-    <div class="col-sm-1 text-right">
+    <div class="col-sm-2 text-right">
         {{ $task->getPrice() }} &euro;
     </div>
     <div class="col-sm-1">

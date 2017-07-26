@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\WrikeApi;
 use Illuminate\Http\Request;
 use App\Facades\WrikeApiFacade as Wrike;
 use App\Offer;
 use App\Task;
+use Illuminate\Support\Facades\App;
 
 class OffersController extends Controller
 {
@@ -20,7 +22,7 @@ class OffersController extends Controller
         $offeredOffers = Offer::where('status', 'angeboten')->get();
         $acceptedOffers = Offer::where('status', 'angenommen')->get();
         $rejectedOffers = Offer::where('status', 'abgelehnt')->get();
-        
+
         return view('pages.offers', [
             'inPreparationOffers'   => $inPreparationOffers,
             'offeredOffers'         => $offeredOffers,
@@ -49,7 +51,7 @@ class OffersController extends Controller
         $offer->title = request('title');
         $offer->wrike_project_id_v2 = request('wrike_project_id_v2');
         if($offer->wrike_project_id_v2) {
-            $offer->wrike_project_id_v3 = Wrike::convertLegacyId($offer->wrike_project_id_v2, 'Folder');
+            $offer->wrike_project_id_v3 = App::make(WrikeApi::class)->convertId($offer->wrike_project_id_v2, 'Folder');
         }
         $offer->date = request('alternativeDate');
         $offer->status = request('status');

@@ -7,6 +7,8 @@ use App\Facades\WrikeApiFacade as Wrike;
 use App\Offer;
 use App\Task;
 use App\TaskTask;
+use Illuminate\Support\Facades\App;
+use App\WrikeApi;
 
 class TasksController extends Controller
 {
@@ -17,13 +19,13 @@ class TasksController extends Controller
     
     private function getCustomFieldFromWrikeTask($wrikeTask, $searchedFieldId)
     {
-        foreach($wrikeTask->customFields as $customField) {
-            if($customField->id == $searchedFieldId) {
-                if($customField->value == '0h' || $customField->value == '') {
+        foreach($wrikeTask['customFields'] as $customField) {
+            if($customField['id'] == $searchedFieldId) {
+                if($customField['value'] == '0h' || $customField['value'] == '') {
                     return 1;
                 }
-                if(preg_match('%^[0-9:]+$%', $customField->value)) {
-                    return $customField->value;
+                if(preg_match('%^[0-9:]+$%', $customField['value'])) {
+                    return $customField['value'];
                 }
                 else {
                     return 2;
@@ -36,12 +38,12 @@ class TasksController extends Controller
     {
         static $id = null;
         static $task = null;
-        if($wrikeTask->id == $id) {
+        if($wrikeTask['id'] == $id) {
             return $task;
         }
         else {
-            $task = Task::where('wrike_task_id_v3', $wrikeTask->id)->first();
-            $id = $wrikeTask->id;
+            $task = Task::where('wrike_task_id_v3', $wrikeTask['id'])->first();
+            $id = $wrikeTask['id'];
             if($task) {
                 return $task;
             }
@@ -62,27 +64,27 @@ class TasksController extends Controller
         }
         else {
             $task = new Task();
-            $task->wrike_task_id_v3 = $wrikeTask->id;
+            $task->wrike_task_id_v3 = $wrikeTask['id'];
             $task->offer_id = $offerId;
         }
-        $task->wrike_has_parent_tasks = !empty($wrikeTask->superTaskIds);
-        $task->wrike_has_child_tasks = !empty($wrikeTask->subTaskIds);
+        $task->wrike_has_parent_tasks = !empty($wrikeTask['superTaskIds']);
+        $task->wrike_has_child_tasks = !empty($wrikeTask['subTaskIds']);
         if($task->wrike_has_child_tasks) {
-            foreach($wrikeTask->subTaskIds as $childTaskV3Id) {
-                if( !$this->taskToTaskRelationExistsInDb($wrikeTask->id, $childTaskV3Id) ) {
+            foreach($wrikeTask['subTaskIds'] as $childTaskV3Id) {
+                if( !$this->taskToTaskRelationExistsInDb($wrikeTask['id'], $childTaskV3Id) ) {
                     $taskTask = new TaskTask();
-                    $taskTask->parent_wrike_task_id_v3 = $wrikeTask->id;
+                    $taskTask->parent_wrike_task_id_v3 = $wrikeTask['id'];
                     $taskTask->child_wrike_task_id_v3 = $childTaskV3Id;
                     $taskTask->save();
                 }
             }
         }
-        $task->wrike_title = $wrikeTask->title;
-        $task->wrike_description = $wrikeTask->description;
+        $task->wrike_title = $wrikeTask['title'];
+        $task->wrike_description = $wrikeTask['description'];
         $task->wrike_effort = $this->getCustomFieldFromWrikeTask($wrikeTask, self::AUFWAND_GESAMT);
         $task->wrike_effort_design = $this->getCustomFieldFromWrikeTask($wrikeTask, self::AUFWAND_DESIGN_UND_UX);
         $task->wrike_effort_tech = $this->getCustomFieldFromWrikeTask($wrikeTask, self::AUFWAND_TECHNIK);
-        $task->wrike_optional = preg_match('%\[optional\]%', $wrikeTask->title);
+        $task->wrike_optional = preg_match('%\[optional\]%', $wrikeTask['title']);
         if( ! $this->taskExistsInDb($wrikeTask)) {
             $task->title = $task->wrike_title;
             $task->description = $task->wrike_description;
@@ -100,15 +102,16 @@ class TasksController extends Controller
     {
         $offerId = $id;
         
-        $offer = Offer::find($offerId)->first();
+        $offer = Offer::find($offerId);
         
         $wrikeProjectId = $offer->wrike_project_id_v3;
-        
-        $wrikeTasks = Wrike::getProjectTasks($wrikeProjectId);
-        
+
+        $wrikeTasks = $offer->wrike_project_id_v3 = App::make(WrikeApi::class)->getProjectTasks($wrikeProjectId);
+
         foreach($wrikeTasks as $wrikeTask) {
             $this->createTaskFromWrikeTask($offerId, $wrikeTask);
         }
+
         return redirect('offers/' . $offerId);
     }
 

@@ -34,5 +34,12 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+    
+    /* MKX */
+    'wrike' => [
+        'clientId'          => env('WRIKE_CLIENT_ID'),
+        'clientSecret'      => env('WRIKE_CLIENT_SECRET'),
+        'redirectUri'       => env('WRIKE_REDIRECT_URI'),
+    ],
 
 ];

@@ -63,7 +63,7 @@ h3 {
     float: right ! important;
 }
 /*** Page: offer ***/
-#mwd-save-offer-button {
+#mwd-save-offer-button, #mwd-offer-pdf-button {
     float: right ! important;
 }
 #mwd-task-list .row {
