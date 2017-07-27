@@ -88,7 +88,19 @@
             </div>
                 
         </div>
-                 
+
+
+        <div class="container">
+            <h3>Popover Example</h3>
+            <a href="#"
+               data-toggle="popover"
+               data-placement="top"
+               data-trigger="focus"
+               title="Popover Header"
+               data-content="Some content inside the popover"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
+            </a>
+        </div>
+
         <div class="row">
                 
             <!-- Wrike-ID -->
@@ -98,17 +110,18 @@
                     <input type="text" class="form-control" id="wrike_project_id_v2" name="wrike_project_id_v2" value="{{ isset($offer->wrike_project_id_v2) ? $offer->wrike_project_id_v2 : old('wrike_project_id_v2') }}">
                 </div>
                 @isset($offer->id)
-                <a id="mwd-new-offer col-sm-2" href="{{ url('tasks/import/offer/' . $offer->id) }}" class="btn btn-success" role="button">
-                    <span class="align-middle">Import</span>
-                </a>
-                @endisset
-            </div>
+                    <!-- Import-Button -->
+                    <a id="mwd-new-offer col-sm-2" href="{{ url('tasks/import/offer/' . $offer->id) }}" class="btn btn-success" role="button">
+                        <span class="align-middle">Import</span>
+                    </a>
 
-            <!-- PDF-Button -->
-            <div id="mwd-offer-pdf-button" class="form-group">
-                <a href="{{ url('offer/' . $offer->id . '/pdf') }}" class="btn btn-primary" role="button">
-                    <span class="align-middle">PDF</span>
-                </a>
+                    <!-- PDF-Button -->
+                    <div id="mwd-offer-pdf-button" class="form-group">
+                        <a href="{{ url('offer/' . $offer->id . '/pdf') }}" class="btn btn-primary" role="button">
+                            <span class="align-middle">PDF</span>
+                        </a>
+                    </div>
+                @endisset
             </div>
             
         </div>

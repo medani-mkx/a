@@ -1,26 +1,23 @@
 <div id="mwd-task-{{ $task->id }}" class="row mwd-task mwd-task-level-{{ substr_count($space, '&nbsp;') / 5 }}">
     <div class="row">
         <div class="col-sm-6">
-            <span>{{ $space }}</span><span class="mwd-editable mwd-title">{{ $task->title }}</span>
+            <span>{{ $space }}</span><span data-task="title">{{ $task->title }}</span>
         </div>
         <div class="col-sm-2 text-right">
-            <span class="mwd-editable mwd-price">{{ $task->getPrice() }}</span> &euro;
+            @if($task->add_price_to_task_id)<s>@endif<span>{{ $task->getPrice() }}</span> &euro;@if($task->add_price_to_task_id)</s>@endif
         </div>
-        <div class="col-sm-1">
-            <span class="mwd-editable mwd-effort">{{ $task->getEffort() }}</span>
+        <div class="col-sm-1 text-right">
+            <span data-task="special_rph">{{ $task->getRph() }}</span> &euro;
         </div>
-        <div class="col-sm-1">
-            <span class="mwd-editable mwd-effort-design">{{ $task->getEffortDesign() }}</span>
-        </div>
-        <div class="col-sm-1">
-            <span class="mwd-editable mwd-effort-tech">{{ $task->getEffortTech() }}</span>
+        <div class="col-sm-2">
+            <span data-task="effort">{{ $task->getEffort() }}</span>&nbsp;-&nbsp;<span data-task="effort_design">{{ $task->getEffortDesign() }}</span>&nbsp;-&nbsp;<span data-task="effort_tech">{{ $task->getEffortTech() }}</span>
         </div>
         <span data-toggle="collapse" href="#collapse{{ $task->id }}" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
     </div>
     <div class="row">
         <div id="collapse{{ $task->id }}" class="collapse">
             <div class="row">
-                <span class="mwd-editable mwd-description">{!! $task->description !!}</span>
+                <span data-task="description">{!! $task->description !!}</span>
             </div>
         </div>
     </div>

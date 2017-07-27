@@ -21,10 +21,12 @@ $(document).ready(function(){
     });
 
     function mwdToggleTask(taskId) {
+        var editableElements = $('#mwd-task-' + taskId).find('[data-task]');
+
         // Icon
         var status = mwdToggleIcon(taskId);
         // Editable
-        mwdToggleEditable(taskId, status);
+        mwdToggleEditable(editableElements, status);
         // Style
         if(status === 'editable') {
             $('#mwd-task-' + taskId).css({"border-color": "#99d6ff",
@@ -34,42 +36,42 @@ $(document).ready(function(){
         else if(status === 'saved') {
             $('#mwd-task-' + taskId).css({"border": "none"});
         }
-        // Save to DB
+        // Ajax
         if(status === 'saved') {
-            mwdAjaxUpdate(taskId);
+            // Collect data
+            var data = {};
+            data['id'] = taskId;
+            editableElements.each( function() {
+                var key = $(this).data('task');
+                var index = $(this).html();
+                data[key] = index;
+            });
+            // Save to DB
+            mwdAjaxUpdate(taskId, data);
         }
     }
 
-    function mwdAjaxUpdate(taskId) {
+    function mwdAjaxUpdate(taskId, data) {
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
             }
         })
         $.ajax({
-            type: 'POST',
-            url: '/benutzer/' + userId + '/einsatzstelle/' + branchId,
-            data: '[]',
+            type: 'PUT',
+            url: '/tasks/' + taskId,
+            data: data,
             dataType: 'json',
             success: function (data) {
-                var branch = data;
-                var html =
-                    '<div class="input-group mwd-user-branches mwd-single-user-branch" data-branch-id="' + branchId + '" data-branch=\'' + JSON.stringify(branch) + '\'>' +
-                    '<div class="input-group-btn">' +
-                    '<button type="button" class="btn btn-danger mwd-delete-user-branch">' +
-                    '<span class="glyphicon glyphicon-minus"></span>' +
-                    '</button>' +
-                    '<button style="white-space: normal;" type="button" class="btn btn-default btn-detail open-modal">' +
-                    branch.address_line_1 + ', ' + branch.zip_code + ' ' + branch.city + ' &#149; ' + branch.name + (branch.name_2 != '' ? '&#149; ' + branch.name_2 : '') +
-                    '</button>' +
-                    '</div>' +
-                    '</div>';
-                $('.row[data-user-id="' + userId + '"]').find('.mwd-user-branches-list').append(html);
-                $('.row[data-user-id="' + userId + '"]').find('.text-muted').remove();
-                initDeleteUserBranch();
+                if(data === 1) {
+                    console.log('Ajax-Request erfolgreich');
+                }
+                else {
+                    console.log(data);
+                }
             },
-            error: function (req, status, err) {
-                console.log('Something went wrong', status, err);
+            error: function (request, error, message) {
+                console.log('Ajax-Fehler:', error, 'Beschreibung:', message);
             }
         });
     }
@@ -90,8 +92,7 @@ $(document).ready(function(){
         }
     }
 
-    function mwdToggleEditable(taskId, status) {
-        var editableElements = $('#mwd-task-' + taskId + ' .mwd-editable');
+    function mwdToggleEditable(editableElements, status) {
         if(status === 'editable') {
             editableElements.bind('mouseenter',
                 function(){
@@ -138,4 +139,31 @@ $(document).ready(function(){
 
         $('#' + selectedStatus).removeClass('hidden');
     });
+
+    // $(document).ready(function(){
+        $('[data-toggle="popover"]').popover();
+    // });
 });
+
+// $(document).ready(function() {
+//     needToConfirm = false;
+//     window.onbeforeunload = askConfirm;
+// });
+//
+// function askConfirm() {
+//     if (needToConfirm) {
+//         // Put your custom message here
+//         return "Your unsaved data will be lost.";
+//     }
+// }
+//
+// $("select,input,textarea").change(function() {
+//     needToConfirm = true;
+// });
+
+
+// var el = document.getElementById('myCoolForm');
+//
+// el.addEventListener('submit', function(){
+//     return confirm('Are you sure you want to submit this form?');
+// }, false);

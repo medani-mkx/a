@@ -53,6 +53,9 @@ class Task extends Model
     
     public function getEffort()
     {
+        if($this->effort && $this->effort !== '00:00:00') {
+            return $this->effort;
+        }
         if($this->effort_design && $this->effort_tech) {
             $timestamp = strtotime($this->effort_design) + strtotime($this->effort_tech);
             $effort = date('H:i:s', $timestamp);
@@ -79,15 +82,36 @@ class Task extends Model
     
     public function getPrice()
     {
+        // If price of this task is added to price of other task, then return false, unless an option is set as parameter
+//        if($this->add_price_to_task_id && $option !== 'RETURN_PRICE') {
+//            return false;
+//        }
+
+        // Calculate price of task
         $array = explode(':', $this->getEffort());
         $hours = $array[0] + $array[1] / 60;
         $price = $hours * $this->getRph();
-        return number_format($price, 2);
+        $price = number_format($price, 2);
+
+        // Add prices of other task to price of this task
+        $otherTasks = Task::where('add_price_to_task_id', $this->id)->get();
+        foreach($otherTasks as $otherTask) {
+            $price =        floatval(preg_replace('/[^\d.]/', '', $price));
+            $otherPprice =  floatval(preg_replace('/[^\d.]/', '', $otherTask->getPrice()));
+            $price += $otherPprice;
+            $price = number_format($price, 2);
+        }
+
+        // Return price
+        return $price;
     }
     
-    private function getRph()
+    public function getRph()
     {
+        if($this->special_rph) {
+            return $this->special_rph;
+        }
         $offer = Offer::find($this->offer_id);
-        return $offer->rph;
+        return $offer->rph ? $offer->rph : 0;
     }
 }

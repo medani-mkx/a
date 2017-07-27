@@ -75,6 +75,10 @@ h3 {
     margin-right: 0;
     margin-left: 0;
 }
+/*span[data-task=title] {*/
+    /*display: block;*/
+/*}*/
+
 
 .mwd-task.mwd-task-level-0:nth-child(even) {
     background: #C8C8C8	;
