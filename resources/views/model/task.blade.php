@@ -1,23 +1,27 @@
-<div class="row mwd-task mwd-task-level-{{ substr_count($space, '&nbsp;') / 5 }}">
-    <div class="col-sm-6">
-        {{ $space }}{{ $task->title }}
+<div id="mwd-task-{{ $task->id }}" class="row mwd-task mwd-task-level-{{ substr_count($space, '&nbsp;') / 5 }}">
+    <div class="row">
+        <div class="col-sm-6">
+            <span>{{ $space }}</span><span class="mwd-editable mwd-title">{{ $task->title }}</span>
+        </div>
+        <div class="col-sm-2 text-right">
+            <span class="mwd-editable mwd-price">{{ $task->getPrice() }}</span> &euro;
+        </div>
+        <div class="col-sm-1">
+            <span class="mwd-editable mwd-effort">{{ $task->getEffort() }}</span>
+        </div>
+        <div class="col-sm-1">
+            <span class="mwd-editable mwd-effort-design">{{ $task->getEffortDesign() }}</span>
+        </div>
+        <div class="col-sm-1">
+            <span class="mwd-editable mwd-effort-tech">{{ $task->getEffortTech() }}</span>
+        </div>
+        <span data-toggle="collapse" href="#collapse{{ $task->id }}" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
     </div>
-    <div class="col-sm-2 text-right">
-        {{ $task->getPrice() }} &euro;
-    </div>
-    <div class="col-sm-1">
-        {{ $task->getEffort() }}
-    </div>
-    <div class="col-sm-1">
-        {{ $task->getEffortDesign() }}
-    </div>
-    <div class="col-sm-1">
-        {{ $task->getEffortTech() }}
-    </div>
-    <span data-toggle="collapse" href="#collapse{{ $task->id }}" class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
-    <div id="collapse{{ $task->id }}" class="collapse">
-        <div class="row">
-            {!! $task->description !!}
+    <div class="row">
+        <div id="collapse{{ $task->id }}" class="collapse">
+            <div class="row">
+                <span class="mwd-editable mwd-description">{!! $task->description !!}</span>
+            </div>
         </div>
     </div>
 </div>

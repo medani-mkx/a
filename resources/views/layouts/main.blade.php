@@ -27,15 +27,17 @@
         </div>
     </div>
 
-    <!-- AJAX -->
+    <!-- Für Ajax-Requests sollte man gegen CSRF immer Tokens verwenden -->
     <meta name="_token" content="{{ csrf_token() }}" />
-    <!-- AJAX -->
-        
+
     <!-- Scripts -->
+    <!-- app.js -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <!-- custom.js -->
+    <script src="{{ asset('js/custom.js') }}"></script>
+    <!-- jquery-ui.js -->
     <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-    
-    
+    <!-- tinymce.min.js -->
     <script src="{{ asset('js/vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
     <script>
         tinymce.init({
